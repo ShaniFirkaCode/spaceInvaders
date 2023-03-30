@@ -21,9 +21,8 @@ var gGame = {
 function init() {
     gBoard = createBoard()
     renderBoard(gBoard)
-    gGame.isOn = true
-    gIsAlienFreeze = false
-    moveAliens()
+    gGame.isOn = false
+    gIsAlienFreeze = true
 }
 
 function createBoard() {
@@ -60,19 +59,44 @@ function renderBoard(board) {
     elBoard.innerHTML = strHTML
 }
 
+function startGame(elBtn) {
+    // var elSpan = elBtn.querySelector('span')
+    if (elBtn.innerHTML === 'Start') {
+        elBtn.innerHTML = 'Restart'
+        closeModal()
+        gIsAlienFreeze = false
+        gGame.isOn = true
+        moveAliens()
+
+    } else if ((elBtn.innerHTML === 'Restart')) { // restart
+        stopGame()
+        gGame.aliensCount = 0
+        gGame.score = 0
+        renderScore()
+        closeModal()
+        elBtn.innerHTML = 'Start'
+        init()
+    }
+}
+
 function victory() {
     stopGame()
     openModal('VICTORY 🥇')
 }
 
+function loss() {
+    stopGame()
+    openModal('GAME OVER 💀')
+}
+
 function stopGame() {
+    var elBtn = document.querySelector('.btn')
+    elBtn.innerHTML = 'Restart'
     gGame.isOn = false
     gIsAlienFreeze = true
-    if (gBlinkInterval) stopLaser()
-    if (gIntervalAliens) {
-        clearInterval(gIntervalAliens)
-        gIntervalAliens = null
-    }
+    stopLaser()
+    clearInterval(gIntervalAliens)
+    gIntervalAliens = null
     console.log('game stoped!')
 }
 

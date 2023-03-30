@@ -52,7 +52,7 @@ function shoot() {
 }
 
 // renders a LASER at specific cell for short time and removes it
-function blinkLaser(pos) {
+function blinkLaser() {
     if (!gHero.isShoot) return
     if (gLaserPos.i < 0) {
         stopLaser()
@@ -69,6 +69,7 @@ function blinkLaser(pos) {
 }
 
 function stopLaser() {
+    gLaserPos = null
     gHero.isShoot = false
     clearInterval(gBlinkInterval)
     gBlinkInterval = null

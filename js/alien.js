@@ -1,14 +1,10 @@
 'use strict'
 
-const ALIEN_SPEED = 500;
-var gIntervalAliens;
-// The following two variables represent the part of the matrix (some rows)
-// that we should shift (left, right, and bottom)
-// We need to update those when:
-// (1) shifting down and (2) last alien was cleared from row
-var gAliensTopRowIdx;
-var gAliensBottomRowIdx;
-var gIsAlienFreeze = true;
+const ALIEN_SPEED = 500
+var gIntervalAliens
+var gAliensTopRowIdx
+var gAliensBottomRowIdx
+var gIsAlienFreeze = true
 
 function createAliens(board) {
     gAliensTopRowIdx = 0
@@ -33,10 +29,10 @@ function handleAlienHit(pos) {
 
 function shiftBoardRight(board, fromI, toI) {
     if (gIsAlienFreeze) return
-    var rightAlienIdx = getMostRightAlienOnBoardIdx(board)
-    if (rightAlienIdx === board[0].length - 1) {
+    if (isAliensReachedRightWall(board)) {
+        (console.log('got in if'))
         clearInterval(gIntervalAliens)
-        gIntervalAliens = setInterval(shiftBoardDown(board, gAliensTopRowIdx, gAliensBottomRowIdx), ALIEN_SPEED)
+        gIntervalAliens = setInterval(shiftBoardDown, ALIEN_SPEED, board, gAliensTopRowIdx, gAliensBottomRowIdx)
     } else {
         for (var i = fromI; i <= toI; i++) {
             for (var j = board[0].length - 1; j >= 0; j--) {
@@ -55,9 +51,7 @@ function shiftBoardRight(board, fromI, toI) {
 
 function shiftBoardLeft(board, fromI, toI) {
     if (gIsAlienFreeze) return
-    var leftAlienIdx = getMostLeftAlienOnBoardIdx(gBoard)
-    console.log('left:', leftAlienIdx)
-    if (leftAlienIdx === 0) {
+    if (isAliensReachedLeftWall(board)) {
         clearInterval(gIntervalAliens)
         gIntervalAliens = setInterval(shiftBoardDown(board, gAliensTopRowIdx, gAliensBottomRowIdx), ALIEN_SPEED)
     } else {
@@ -78,16 +72,18 @@ function shiftBoardLeft(board, fromI, toI) {
 
 function shiftBoardDown(board, fromI, toI) {
     if (gIsAlienFreeze) return
-    if (gAliensBottomRowIdx + 1 === gHero.pos.i) stopGame()// aliens reaching the hero row
+    if (gAliensBottomRowIdx + 1 === gHero.pos.i) {
+        loss()
+        return
+    }
     else {
         for (var i = toI + 1; i >= fromI; i--) {
             for (var j = 0; j < board[0].length; j++) {
-                if (i === 0 || i === gAliensTopRowIdx) {
-                    board[i][j].gameObject = null
-                } else {
+                if (i === 0 || i === gAliensTopRowIdx) board[i][j].gameObject = null
+                else {
                     var cellAboveObj = board[i - 1][j].gameObject
                     if (cellAboveObj === LASER) handleAlienHit({ i, j })
-                    board[i][j].gameObject = (cellAboveObj === ALIEN) ? ALIEN : board[i][j].gameObject
+                    board[i][j].gameObject = (cellAboveObj === ALIEN) ? ALIEN : null
                 }
             }
         }
@@ -95,9 +91,9 @@ function shiftBoardDown(board, fromI, toI) {
         gAliensBottomRowIdx++
         gBoard = board
         renderBoard(board)
-        var rightAlienIdx = getMostRightAlienOnBoardIdx(board)
+
         clearInterval(gIntervalAliens)
-        if (rightAlienIdx === board.length - 1) {
+        if (isAliensReachedRightWall(board)) {
             gIntervalAliens = setInterval(shiftBoardLeft, ALIEN_SPEED, gBoard, gAliensTopRowIdx, gAliensBottomRowIdx)
         } else gIntervalAliens = setInterval(shiftBoardRight, ALIEN_SPEED, gBoard, gAliensTopRowIdx, gAliensBottomRowIdx)
     }
@@ -108,54 +104,19 @@ function shiftBoardDown(board, fromI, toI) {
 // it re-renders the board every time
 // when the aliens are reaching the hero row - interval stops
 function moveAliens() {
-    if (!gIsAlienFreeze) return // 
     gIntervalAliens = setInterval(shiftBoardRight, ALIEN_SPEED, gBoard, gAliensTopRowIdx, gAliensBottomRowIdx)
-
 }
 
-function getLeftAlienInRowIdx(row) {
-    var rowObjects = []
-    for (var j = 0; j < row.length; j++) {
-        rowObjects.push(row[j].gameObject)
-    }
-    console.log(rowObjects)
-    if (rowObjects.includes(ALIEN)) {
-        for (var j = 0; j < row.length; j++) {
-            // console.log(rowObjects[j])
-            if (row[j].gameObject === ALIEN) return j
-        }
-    } else return null
-}
-
-function getMostLeftAlienOnBoardIdx(board) {
-    var leftJ = board.length - 1
+function isAliensReachedRightWall(board) {
     for (var i = 0; i < board.length; i++) {
-        var currIdx = getLeftAlienInRowIdx(board[i])
-        if (currIdx < leftJ) leftJ = currIdx
+        if (board[i][board.length - 1].gameObject === ALIEN) return true
     }
-    return leftJ
+    return false
 }
 
-function getRightAlienInRowIdx(row) {
-    var rowObjects = []
-    for (var j = row.length - 1; j >= 0; j--) {
-        rowObjects.push(row[j].gameObject)
-    }
-    if (rowObjects.includes(ALIEN)) {
-        for (var j = row.length - 1; j >= 0; j--) {
-            if (row[j].gameObject === ALIEN) return j
-        }
-    }
-    else return null
-}
-
-function getMostRightAlienOnBoardIdx(board) {
-    var rightJ = 0
+function isAliensReachedLeftWall(board) {
     for (var i = 0; i < board.length; i++) {
-        var rightIncurrRow = getRightAlienInRowIdx(board[i])
-        if (rightIncurrRow > rightJ) rightJ = rightIncurrRow
+        if (board[i][0].gameObject === ALIEN) return true
     }
-    return rightJ
+    return false
 }
-
-
