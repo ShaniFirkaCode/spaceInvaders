@@ -25,6 +25,12 @@ function onKeyDown(ev) {
         case 'ArrowRight':
             moveHero(1)
             break
+        case 'n':
+            blowUpNgs()
+            break
+        case 'x':
+            superMode()
+            break
     }
 }
 // Move the hero right (1) or left (-1)
@@ -69,8 +75,14 @@ function blinkLaser() {
 }
 
 function stopLaser() {
-    gLaserPos = null
     gHero.isShoot = false
     clearInterval(gBlinkInterval)
     gBlinkInterval = null
+}
+
+function superMode() {
+    if (gHero.isShoot && gGame.superAttack > 0) {
+        gGame.superAttack--
+        LASER_SPEED *= 2
+    }
 }

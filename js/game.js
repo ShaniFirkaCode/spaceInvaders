@@ -15,7 +15,8 @@ var gBoard;
 var gGame = {
     isOn: false,
     aliensCount: 0,
-    score: 0
+    score: 0,
+    superAttack: 3
 }
 
 function init() {

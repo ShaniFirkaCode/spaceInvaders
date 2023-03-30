@@ -24,13 +24,12 @@ function handleAlienHit(pos) {
     stopLaser()
     updateCell(pos)
     if (gGame.aliensCount === 0) victory()
-    // if(getRightAlienInRowIdx(pos.j)===null) //if was last alien on row
+    else if (!isRowHasAlien(gBoard[pos.i])) updateAlienRowIdxs()
 }
 
 function shiftBoardRight(board, fromI, toI) {
     if (gIsAlienFreeze) return
     if (isAliensReachedRightWall(board)) {
-        (console.log('got in if'))
         clearInterval(gIntervalAliens)
         gIntervalAliens = setInterval(shiftBoardDown, ALIEN_SPEED, board, gAliensTopRowIdx, gAliensBottomRowIdx)
     } else {
@@ -38,9 +37,9 @@ function shiftBoardRight(board, fromI, toI) {
             for (var j = board[0].length - 1; j >= 0; j--) {
                 if (j === 0) board[i][j].gameObject = null
                 else {
-                    var leftCellObj = board[i][j - 1].gameObject
-                    if (leftCellObj === LASER) handleAlienHit({ i, j })
-                    board[i][j].gameObject = (leftCellObj === ALIEN) ? ALIEN : null
+                    var lastCellObj = board[i][j - 1].gameObject
+                    if (lastCellObj === LASER) handleAlienHit({ i, j })
+                    board[i][j].gameObject = (lastCellObj === ALIEN) ? ALIEN : null
                 }
             }
         }
@@ -49,24 +48,50 @@ function shiftBoardRight(board, fromI, toI) {
     }
 }
 
+// function shiftBoardLeft(board, fromI, toI) {
+//     if (gIsAlienFreeze) return
+//     console.log('isAliensReachedleft:', isAliensReachedLeftWall(board))
+//     if (isAliensReachedLeftWall(board)) {
+//         clearInterval(gIntervalAliens)
+//         gIntervalAliens = setInterval(shiftBoardDown, ALIEN_SPEED, board, gAliensTopRowIdx, gAliensBottomRowIdx)
+//     } else {
+//         for (var i = fromI; i <= toI; i++) {
+//             console.log('hi')
+//             for (var j = 0; j < board[0].length; j++) {
+//                 if (j === board[0].length - 1) board[i][j].gameObject = null
+//                 else {
+//                     var nextCellObj = board[i][j + 1].gameObject
+//                     if (nextCellObj === LASER) handleAlienHit({ i, j })
+//                     board[i][j].gameObject = (nextCellObj === ALIEN) ? ALIEN : null
+//                     // console.log('board[' + i + '][' + j + ']:', board[i][j].gameObject)
+//                 }
+//             }
+//         }
+//         gBoard = board
+//         renderBoard(gBoard)
+//     }
+// }
 function shiftBoardLeft(board, fromI, toI) {
     if (gIsAlienFreeze) return
+    // console.log('isAliensReachedleft:', isAliensReachedLeftWall(board))
     if (isAliensReachedLeftWall(board)) {
         clearInterval(gIntervalAliens)
-        gIntervalAliens = setInterval(shiftBoardDown(board, gAliensTopRowIdx, gAliensBottomRowIdx), ALIEN_SPEED)
+        gIntervalAliens = setInterval(shiftBoardDown, ALIEN_SPEED, board, gAliensTopRowIdx, gAliensBottomRowIdx)
     } else {
+        console.log('from: ' + fromI + ' to: ' + toI)
         for (var i = fromI; i <= toI; i++) {
             for (var j = 0; j < board[0].length; j++) {
                 if (j === board[0].length - 1) board[i][j].gameObject = null
                 else {
-                    var leftCellObj = board[i][j + 1].gameObject
-                    if (leftCellObj === LASER) handleAlienHit({ i, j })
-                    board[i][j].gameObject = (leftCellObj === ALIEN) ? ALIEN : null
+                    var nextCellObj = board[i][j + 1].gameObject
+                    if (nextCellObj === LASER) handleAlienHit({ i, j })
+                    board[i][j].gameObject = (nextCellObj === ALIEN) ? ALIEN : null
+                    // console.log('board[' + i + '][' + j + ']:', board[i][j].gameObject)
                 }
             }
         }
         gBoard = board
-        renderBoard(board)
+        renderBoard(gBoard)
     }
 }
 
@@ -79,23 +104,25 @@ function shiftBoardDown(board, fromI, toI) {
     else {
         for (var i = toI + 1; i >= fromI; i--) {
             for (var j = 0; j < board[0].length; j++) {
-                if (i === 0 || i === gAliensTopRowIdx) board[i][j].gameObject = null
+                if (i === 0 || i === fromI) board[i][j].gameObject = null
                 else {
                     var cellAboveObj = board[i - 1][j].gameObject
-                    if (cellAboveObj === LASER) handleAlienHit({ i, j })
+                    if (cellAboveObj === LASER) {
+                        handleAlienHit({ i, j })
+                        board[i][j].gameObject = null
+                    }
                     board[i][j].gameObject = (cellAboveObj === ALIEN) ? ALIEN : null
                 }
             }
         }
-        gAliensTopRowIdx++
-        gAliensBottomRowIdx++
+        updateAlienRowIdxs()
+        console.log('top: ' + gAliensTopRowIdx + ' bottom: ' + gAliensBottomRowIdx)
         gBoard = board
-        renderBoard(board)
+        renderBoard(gBoard)
 
         clearInterval(gIntervalAliens)
-        if (isAliensReachedRightWall(board)) {
-            gIntervalAliens = setInterval(shiftBoardLeft, ALIEN_SPEED, gBoard, gAliensTopRowIdx, gAliensBottomRowIdx)
-        } else gIntervalAliens = setInterval(shiftBoardRight, ALIEN_SPEED, gBoard, gAliensTopRowIdx, gAliensBottomRowIdx)
+        var func = (isAliensReachedRightWall(gBoard)) ? shiftBoardLeft : shiftBoardRight
+        gIntervalAliens = setInterval(func, ALIEN_SPEED, gBoard, gAliensTopRowIdx, gAliensBottomRowIdx)
     }
 }
 
@@ -120,3 +147,29 @@ function isAliensReachedLeftWall(board) {
     }
     return false
 }
+
+function updateAlienRowIdxs() {
+    for (var i = 0; i < gBoard.length; i++) {
+        if (isRowHasAlien(gBoard[i])) {
+            gAliensTopRowIdx = i
+            break
+        }
+    }
+    for (var i = gBoard.length - 1; i >= 0; i--) {
+        if (isRowHasAlien(gBoard[i])) {
+            gAliensBottomRowIdx = i
+            break
+        }
+    }
+}
+
+
+function isRowHasAlien(row) {
+    var rowObjects = []
+    for (var j = 0; j < row.length; j++) {
+        rowObjects.push(row[j].gameObject)
+    }
+    if (rowObjects.includes(ALIEN)) return true
+    else return false
+}
+
