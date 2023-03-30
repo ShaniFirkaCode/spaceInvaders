@@ -48,37 +48,12 @@ function shiftBoardRight(board, fromI, toI) {
     }
 }
 
-// function shiftBoardLeft(board, fromI, toI) {
-//     if (gIsAlienFreeze) return
-//     console.log('isAliensReachedleft:', isAliensReachedLeftWall(board))
-//     if (isAliensReachedLeftWall(board)) {
-//         clearInterval(gIntervalAliens)
-//         gIntervalAliens = setInterval(shiftBoardDown, ALIEN_SPEED, board, gAliensTopRowIdx, gAliensBottomRowIdx)
-//     } else {
-//         for (var i = fromI; i <= toI; i++) {
-//             console.log('hi')
-//             for (var j = 0; j < board[0].length; j++) {
-//                 if (j === board[0].length - 1) board[i][j].gameObject = null
-//                 else {
-//                     var nextCellObj = board[i][j + 1].gameObject
-//                     if (nextCellObj === LASER) handleAlienHit({ i, j })
-//                     board[i][j].gameObject = (nextCellObj === ALIEN) ? ALIEN : null
-//                     // console.log('board[' + i + '][' + j + ']:', board[i][j].gameObject)
-//                 }
-//             }
-//         }
-//         gBoard = board
-//         renderBoard(gBoard)
-//     }
-// }
 function shiftBoardLeft(board, fromI, toI) {
     if (gIsAlienFreeze) return
-    // console.log('isAliensReachedleft:', isAliensReachedLeftWall(board))
     if (isAliensReachedLeftWall(board)) {
         clearInterval(gIntervalAliens)
         gIntervalAliens = setInterval(shiftBoardDown, ALIEN_SPEED, board, gAliensTopRowIdx, gAliensBottomRowIdx)
     } else {
-        console.log('from: ' + fromI + ' to: ' + toI)
         for (var i = fromI; i <= toI; i++) {
             for (var j = 0; j < board[0].length; j++) {
                 if (j === board[0].length - 1) board[i][j].gameObject = null
@@ -86,7 +61,6 @@ function shiftBoardLeft(board, fromI, toI) {
                     var nextCellObj = board[i][j + 1].gameObject
                     if (nextCellObj === LASER) handleAlienHit({ i, j })
                     board[i][j].gameObject = (nextCellObj === ALIEN) ? ALIEN : null
-                    // console.log('board[' + i + '][' + j + ']:', board[i][j].gameObject)
                 }
             }
         }

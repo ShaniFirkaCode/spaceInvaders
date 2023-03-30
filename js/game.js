@@ -73,7 +73,9 @@ function startGame(elBtn) {
         stopGame()
         gGame.aliensCount = 0
         gGame.score = 0
+        gGame.superAttack = 3
         renderScore()
+        renderSuper()
         closeModal()
         elBtn.innerHTML = 'Start'
         init()

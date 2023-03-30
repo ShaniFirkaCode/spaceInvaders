@@ -1,6 +1,7 @@
 'use strict'
 
-onmousedown = "event.preventDefault()"
+// onmousedown = "event.preventDefault()"
+
 // Returns a new cell object. e.g.: {type: SKY, gameObject: ALIEN}
 function createCell(gameObject = null) {
     return {
