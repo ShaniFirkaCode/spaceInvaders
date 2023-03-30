@@ -1,0 +1,46 @@
+body {
+    background-image: url("/img/space.jpg");
+    background-size: cover;
+    background-color: rgba(43, 10, 134, 0.896);
+    color: rgb(255, 255, 255);
+    font-family: "Papyrus";
+    text-align: center;
+    margin: auto;
+}
+
+.board {
+    margin: auto;
+}
+
+.sky {
+    background-color: #000000;
+}
+
+.earth {
+    background-color: #d30000;
+}
+
+td {
+    width: 30px;
+    height: 30px;
+}
+
+img {
+    padding: 2px;
+    height: 25px;
+    width: 25px;
+}
+
+.modal {
+    display: none;
+    border: solid 3px grey;
+    width: 300px;
+    height: 200px;
+    background-color: rgb(222, 226, 228);
+    color: black;
+    font-size: 32px;
+
+    position: absolute;
+    top: 200px;
+    left: calc(50% - 150px);
+}
