@@ -4,31 +4,39 @@ body {
     background-color: rgba(43, 10, 134, 0.896);
     color: rgb(255, 255, 255);
     font-family: "Papyrus";
+    font-weight: bold;
+    /* -webkit-text-stroke: 0.0001px rgb(148, 255, 168); */
     text-align: center;
     margin: auto;
 }
 
-h2 {
-    padding: 0;
+.instructions {
+    padding-left: 5px;
+    left: 20px;
+    height: 450px;
+    width: 300px;
+    color: white;
+    background-color: #000000;
+    border: #c800d3 solid 1px;
+    bottom: calc(50% - 225px);
+    text-align: left;
+    font-weight: lighter;
+    position: absolute;
+
+
 }
 
 .btn {
+    height: 30px;
     background-color: #000000;
     border-radius: 30%;
     border: #c800d3 solid 1px;
     color: white;
+
 }
 
 .board {
     margin: auto;
-}
-
-.sky {
-    background-color: #000000;
-}
-
-.earth {
-    background-color: #d30000;
 }
 
 td {
@@ -42,16 +50,27 @@ img {
     width: 25px;
 }
 
+.sky {
+    background-color: #000000;
+}
+
+.earth {
+    background-image: url("/img/tile1.png");
+    background-color: #570086;
+    background-size: cover;
+}
+
 .modal {
     background-image: url("/img/space.jpg");
+    background-size: cover;
     display: none;
-    border: solid 3px #c800d3;
+    border: solid 3px rgb(106, 0, 255);
     width: 300px;
     height: 200px;
     background-color: rgb(108, 5, 211);
     color: white;
-    font-size: 32px;
+    font-size: 30px;
     position: absolute;
-    top: calc(50% + 50px);
+    top: calc(40%);
     left: calc(50% - 150px);
 }

@@ -12,15 +12,16 @@
 <body onKeyDown="onKeyDown(event)" onload="init()">
     <div class="top-page">
         <h1>SPACE INVADERS</h1>
-        <h2 class="score">Score: <span>0</span></h2>
-        <h2 class="super-mode">Super Mode: <span>⬆️⬆️⬆️</span></h2>
-        <button class="btn" onclick="startGame(this)">Start</button>
+        <h4 class="score">Score: <span>0</span></h4>
+        <h4 class="super-mode">Super Mode: <span>⬆️⬆️⬆️</span></h4>
+        <button class="btn" onclick="startGame(this, event)">Start</button>
     </div>
     <table class="board">
     </table>
     <div class="modal">
         <h3 class="msg"></h3>
     </div>
+    <div class="instructions"></div>
 
     <script src="js/util.js"></script>
     <script src="js/alien.js"></script>
