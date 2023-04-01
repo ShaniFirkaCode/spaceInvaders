@@ -5,7 +5,7 @@ var gIntervalAliens
 var gAliensTopRowIdx
 var gAliensBottomRowIdx
 var gIsAlienFreeze
-var gAlienPos
+var gRockPos
 var gBlinkRockInterval
 
 function createAliens(board) {
@@ -103,7 +103,7 @@ function moveAliens() {
     gIntervalAliens = setInterval(shiftBoardRight, ALIEN_SPEED, gBoard, gAliensTopRowIdx, gAliensBottomRowIdx)
 }
 
-function getRandomBottomAlien() {
+function getRandomRockPos() {
     var alienCells = []
     for (var j = 0; j < gBoard[0].length; j++) {
         const cell = gBoard[gAliensBottomRowIdx][j]
@@ -152,28 +152,28 @@ function isRowHasAlien(row) {
 }
 
 function throwRocks() {
-    gAlienPos = getRandomBottomAlien()
-    gBlinkRockInterval = setInterval(blinkRock, 450)
+    gRockPos = getRandomRockPos()
+    gBlinkRockInterval = setInterval(blinkRock, 500)
 }
 
 function blinkRock() {
-    if (gAlienPos.i > gHero.pos.i) {
+    if (gRockPos.i > gHero.pos.i) {
         stopBlinkRock()
         return
     }
-    if ({ i: gAlienPos.i + 1, gAlienPos } === gHero.pos) {
+    if ({ i: (gRockPos.i + 1), j: gRockPos.j } === gHero.pos) {
         handleHeroHit()
         stopBlinkRock()
         return
-    } else if (gAlienPos.gameObject === CANDY) {
+    } else if (gRockPos.gameObject === CANDY) {
         gIsAlienFreeze = true
         setTimeout(() => gIsAlienFreeze = false, 5000)
     }
-    updateCell(gAlienPos, ROCK)  //add laser
+    updateCell(gRockPos, ROCK)  //add laser
     setTimeout(function () {     // remove laser
-        updateCell(gAlienPos)
-        gAlienPos.i++
-    }, 100)
+        updateCell(gRockPos)
+        gRockPos.i++
+    }, 500)
 }
 
 function stopBlinkRock() {

@@ -91,7 +91,7 @@ function blinkLaser() {// renders a LASER at specific cell for short time and re
         return
     }
     var time = (gHero.isSuper) ? LASER_SPEED : LASER_SPEED * 2
-    updateCell(gLaserPos, LASER)  //add laser
+    updateCell(gLaserPos, LASER)
     setTimeout(function () {
         if (gBoard[gLaserPos.i][gLaserPos.j].gameObject === LASER) updateCell(gLaserPos)
         gLaserPos.i--

@@ -1,5 +1,5 @@
 body {
-    background-image: url("/img/space.jpg");
+    background-image: url("../img/space.jpg");
     background-size: cover;
     background-color: rgba(43, 10, 134, 0.896);
     color: rgb(255, 255, 255);
