@@ -1,11 +1,10 @@
 body {
     background-image: url("../img/space.jpg");
     background-size: cover;
-    background-color: rgba(43, 10, 134, 0.896);
+    background-color: rgba(36, 0, 137, 0.896);
     color: rgb(255, 255, 255);
     font-family: "Papyrus";
     font-weight: bold;
-    /* -webkit-text-stroke: 0.0001px rgb(148, 255, 168); */
     text-align: center;
     margin: auto;
 }
@@ -55,13 +54,13 @@ img {
 }
 
 .earth {
-    background-image: url("/img/tile1.png");
-    background-color: #570086;
+    background-image: url("../img/tile1.png");
+    background-color: #910101;
     background-size: cover;
 }
 
 .modal {
-    background-image: url("/img/space.jpg");
+    background-image: url("../img/space.jpg");
     background-size: cover;
     display: none;
     border: solid 3px rgb(106, 0, 255);
