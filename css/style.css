@@ -13,29 +13,29 @@ body {
 .instructions {
     padding-left: 5px;
     left: 20px;
-    height: 450px;
+    height: 510px;
     width: 300px;
     color: white;
     background-color: #000000;
-    border: #c800d3 solid 1px;
+    border: #c800d3 solid 2px;
+    border-radius: 10%;
     bottom: calc(50% - 225px);
     text-align: left;
     font-weight: lighter;
     position: absolute;
-
-
 }
 
 .btn {
+    margin-top: 10px;
     height: 30px;
     background-color: #000000;
     border-radius: 30%;
-    border: #c800d3 solid 1px;
+    border: #c800d3 solid 2px;
     color: white;
-
 }
 
 .board {
+    top: 100px;
     margin: auto;
 }
 
@@ -72,5 +72,18 @@ img {
     font-size: 30px;
     position: absolute;
     top: calc(40%);
-    left: calc(50% - 150px);
+    right: calc(50% - 150px);
+}
+
+.game-status {
+    padding-right: 5px;
+    right: 150px;
+    height: 300px;
+    width: 200px;
+    color: white;
+    background-color: #000000;
+    border: #c800d3 solid 2px;
+    border-radius: 30%;
+    bottom: calc(50% - 100px);
+    position: absolute;
 }

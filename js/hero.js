@@ -1,7 +1,7 @@
 'use strict'
 
 var LASER_SPEED = 80
-var gHero = { pos: { i: 12, j: 5 }, isShoot: false, isBlowUp: false, isSuper: false };
+var gHero = { pos: { i: 12, j: 5 }, isShoot: false, isBlowUp: false, isSuper: false, isSafe: false };
 var gLaserPos = { i: null, j: null }
 var gBlinkInterval
 
@@ -26,17 +26,30 @@ function onKeyDown(ev) {
             moveHero(1)
             break
         case 'n':
-            console.log(ev.key)
             if (gHero.isShoot) {
                 gHero.isBlowUp = true
-                // blowUpNegs()
+                blowUpNegs()
             }
             break
         case 'x':
-            console.log(ev.key)
             superMode()
             break
+        case 'z':
+            if (!gHero.isSafe) {
+                if (gGame.shields) safeMode()
+            }
     }
+}
+
+function safeMode() {
+    gHero.isSafe = true
+    updateCell(gHero.pos, HERO)
+    gGame.shields--
+    renderShields()
+    setTimeout(() => {
+        gHero.isSafe = false
+        updateCell(gHero.pos, HERO)
+    }, 5000)
 }
 
 function moveHero(dir) {// Move the hero right (1) or left (-1)
@@ -45,7 +58,13 @@ function moveHero(dir) {// Move the hero right (1) or left (-1)
 
     const newJ = gHero.pos.j + dir
     if (newJ === BOARD_SIZE || newJ < 0) return // not in range
-
+    if (gBoard[i][newJ].gameObject === ROCK) return
+    else if (gBoard[i][newJ].gameObject === CANDY) {
+        gGame.score += 50
+        renderScore()
+        gIsAlienFreeze = true
+        setTimeout(() => gIsAlienFreeze = false, 5000)
+    }
     // remove from curr pos:
     updateCell(gHero.pos, null)
 
@@ -66,26 +85,27 @@ function blinkLaser() {// renders a LASER at specific cell for short time and re
     if (gLaserPos.i === 0) {
         stopLaser()
         return
-    } else if (gBoard[gLaserPos.i][gLaserPos.j].gameObject === ALIEN) {
+    }
+    if (gBoard[gLaserPos.i][gLaserPos.j].gameObject === ALIEN) {
         handleAlienHit(gLaserPos)
-        stopLaser()
+        updateCell(gLaserPos)
         return
     }
-    if (gHero.isBlowUp) blowUpNegs()
     var time = (gHero.isSuper) ? LASER_SPEED : LASER_SPEED * 2
-    updateCell(gLaserPos, LASER)
+    updateCell(gLaserPos, LASER)  //add laser
     setTimeout(function () {
-        updateCell(gLaserPos)
+        if (gBoard[gLaserPos.i][gLaserPos.j].gameObject === LASER) updateCell(gLaserPos)
         gLaserPos.i--
     }, time)
 }
 
 function stopLaser() {
+    updateCell(gLaserPos)
     gHero.isShoot = false
-    if (gHero.isBlowUp) gHero.isBlowUp = false
-    if (gHero.isSuper) gHero.isSuper = false
     clearInterval(gBlinkInterval)
     gBlinkInterval = null
+    if (gHero.isBlowUp) gHero.isBlowUp = false
+    if (gHero.isSuper) gHero.isSuper = false
 }
 
 function blowUpNegs() {
@@ -95,10 +115,13 @@ function blowUpNegs() {
         for (var j = gLaserPos.j - 1; j <= gLaserPos.j + 1; j++) {
             if (i === gLaserPos.i && j === gLaserPos.j) continue
             if (j < 0 || j >= gBoard[i].length) continue
-            if (gBoard[i][j].gameObject === ALIEN) handleAlienHit({ i, j })
+            if (gBoard[i][j].gameObject === ALIEN) {
+                if (gHero.isShoot) stopLaser()
+                handleAlienHit({ i, j })
+                updateCell({ i, j })
+            }
         }
     }
-    if (gHero.isShoot) stopLaser()
 }
 
 function superMode() {
@@ -110,14 +133,12 @@ function superMode() {
     }
 }
 
-function renderSuperCount() {
-    const elSuperMode = document.querySelector('.super-mode')
-    const elSpan = elSuperMode.querySelector('span')
-    var txt = ''
-    for (var i = 0; i < gGame.superAttack; i++) {
-        txt += '⬆️'
-    }
-    elSpan.innerHTML = txt
+function handleHeroHit() {
+    if (gHero.isSafe) return
+    gGame.lives--
+    renderLives()
+    if (gGame.lives === 0) loss()
 }
+
 
 

@@ -10,11 +10,13 @@
 </head>
 
 <body onKeyDown="onKeyDown(event)" onload="init()">
-    <div class="top-page">
-        <h1>SPACE INVADERS</h1>
-        <h4 class="score">Score: <span>0</span></h4>
-        <h4 class="super-mode">Super Mode: <span>⬆️⬆️⬆️</span></h4>
+    <h1>SPACE INVADERS</h1>
+    <div class="game-status">
         <button class="btn" onclick="startGame(this, event)">Start</button>
+        <h4 class="score">Score: <span>0</span></h4>
+        <h4 class="lives">lives:<span>❤️❤️❤️</span></h4>
+        <h4 class="shields">Shields:<span>🛡️🛡️🛡️</span></h4>
+        <h4 class="super-mode">Super Mode: <span>⬆️⬆️⬆️</span></h4>
     </div>
     <table class="board">
     </table>

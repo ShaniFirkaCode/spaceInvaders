@@ -11,9 +11,43 @@ function getElCell(pos) {
     return document.querySelector(`[data-i='${pos.i}'][data-j='${pos.j}']`)
 }
 
+function getEmptyCellHeroRow() {
+    var emptyCells = []
+    for (var j = 0; j < gBoard[gHero.pos.i].length; j++) {
+        const cell = gBoard[gHero.pos.i][j]
+        if (cell.gameObject === null) emptyCells.push({ i: gHero.pos.i, j })
+    }
+    var randIdx = getRandomInt(0, emptyCells.length)
+    return emptyCells[randIdx]
+
+}
+
 function renderScore() {
-    const elSpan = document.querySelector('span')
+    const elScore = document.querySelector('.score')
+    const elSpan = elScore.querySelector('span')
     elSpan.innerHTML = gGame.score
+}
+
+function renderLives() {
+    const elLives = document.querySelector('.lives')
+    const elSpan = elLives.querySelector('span')
+    var txt = ''
+    for (var i = 0; i < gGame.lives; i++) {
+        txt += '❤️'
+    }
+
+    elSpan.innerHTML = txt
+}
+
+function renderShields() {
+    const elShields = document.querySelector('.lives')
+    const elSpan = elShields.querySelector('span')
+    var txt = ''
+    for (var i = 0; i < gGame.lives; i++) {
+        txt += '🛡️'
+    }
+
+    elSpan.innerHTML = txt
 }
 
 function openModal(msg) {
@@ -28,17 +62,6 @@ function closeModal() {
     elModal.style.display = 'none'
 }
 
-function showInstructions() {
-    const elInstructions = document.querySelector('.instructions')
-    renderInstructions()
-    elInstructions.style.display = 'block'
-}
-
-function closeInstructions() {
-    const elInstructions = document.querySelector('.instructions')
-    elInstructions.style.display = 'none'
-}
-
 function renderInstructions() {
     var elDiv = document.querySelector('.instructions')
     var instructions = `
@@ -49,6 +72,14 @@ function renderInstructions() {
     👾 Press 'space' to shoot aliens\n
     👾 Blow up aliens around your laser by pressing 'n'\n
     👾 Super mode - press 'x' to shoot faster\n
+    👾 Safe mode- press 'z' to have shild (5 sec)\n
     GO show them what you've got!`
     elDiv.innerText = instructions
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min)
+    // The maximum is exclusive and the minimum is inclusive
 }

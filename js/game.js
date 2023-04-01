@@ -6,23 +6,27 @@ const HERO = '♆'
 const ALIEN = '👽'
 const LASER = '⤊'
 const SUPER_LASER = '🔥' // '⬆'
+const CANDY = '🍬'
+const ROCK = '🪨'
 const SKY = 'sky'
 const EARTH = 'earth'
-
 const HERO_IMG = '<img src="img/hero.png">'
 const ALIEN_IMG = '<img src="img/alien.png">'
-
 
 var gBoard;
 var gGame = {
     isOn: false,
     aliensCount: 0,
     score: 0,
-    superAttack: 3
+    superAttack: 3,
+    lives: 3,
+    shields: 3
 }
+var gCandyInterval
+var gThrowRocksInterval
 
 function init() {
-    showInstructions()
+    renderInstructions()
     gBoard = createBoard()
     renderBoard(gBoard)
     gGame.isOn = false
@@ -34,10 +38,11 @@ function startGame(elBtn, ev) {
     if (elBtn.innerHTML === 'Start') {
         elBtn.innerHTML = 'Restart'
         closeModal()
-        closeInstructions()
         gIsAlienFreeze = false
         gGame.isOn = true
         moveAliens()
+        gThrowRocksInterval = setInterval(throwRocks, 5000)
+        gCandyInterval = setInterval(addCandy, 10000)
     } else if ((elBtn.innerHTML === 'Restart')) restartGame(elBtn)
 }
 
@@ -46,8 +51,11 @@ function restartGame(elBtn) {
     gGame.aliensCount = 0
     gGame.score = 0
     gGame.superAttack = 3
+    gGame.lives = 3
+    gGame.shields = 3
     renderScore()
     renderSuperCount()
+    renderLives()
     closeModal()
     elBtn.innerHTML = 'Start'
     init()
@@ -87,6 +95,12 @@ function renderBoard(board) {
     elBoard.innerHTML = strHTML
 }
 
+function addCandy() {
+    const pos = getEmptyCellHeroRow()
+    updateCell(pos, CANDY)
+    setTimeout(updateCell, 5000, pos)
+}
+
 function victory() {
     stopGame()
     openModal('VICTORY 🥇')
@@ -102,9 +116,24 @@ function stopGame() {
     elBtn.innerHTML = 'Restart'
     gGame.isOn = false
     gIsAlienFreeze = true
-    stopLaser()
+    if (gHero.isShoot) stopLaser()
+    stopBlinkRock()
     clearInterval(gIntervalAliens)
+    clearInterval(gCandyInterval)
+    clearInterval(gThrowRocksInterval)
     gIntervalAliens = null
+    gCandyInterval = null
+    gThrowRocksInterval = null
+}
+
+function renderSuperCount() {
+    const elSuperMode = document.querySelector('.super-mode')
+    const elSpan = elSuperMode.querySelector('span')
+    var txt = ''
+    for (var i = 0; i < gGame.superAttack; i++) {
+        txt += '⬆️'
+    }
+    elSpan.innerHTML = txt
 }
 
 function createCell(gameObject = null) {
@@ -120,7 +149,9 @@ function updateCell(pos, gameObject = null) {
     var value = gameObject || ''
     if (gameObject === LASER) value = (gHero.isSuper) ? SUPER_LASER : LASER
     else if (gameObject === ALIEN) value = ALIEN_IMG
-    else if (gameObject === HERO) value = HERO_IMG
-
+    else if (gameObject === HERO) {
+        if (gHero.isSafe) value = '🛡️'
+        else value = HERO_IMG
+    }
     elCell.innerHTML = value
 }

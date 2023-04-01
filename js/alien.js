@@ -5,6 +5,8 @@ var gIntervalAliens
 var gAliensTopRowIdx
 var gAliensBottomRowIdx
 var gIsAlienFreeze
+var gAlienPos
+var gBlinkRockInterval
 
 function createAliens(board) {
     gAliensTopRowIdx = 0
@@ -18,7 +20,6 @@ function createAliens(board) {
 }
 
 function handleAlienHit(pos) {
-    updateCell(pos)
     stopLaser()
     gGame.aliensCount--
     gGame.score += 10
@@ -32,14 +33,15 @@ function shiftBoardRight(board, fromI, toI) {
     if (isAliensReachedRightWall(board)) {
         clearInterval(gIntervalAliens)
         shiftBoardDown(board, gAliensTopRowIdx, gAliensBottomRowIdx)
-        //gIntervalAliens = setInterval(shiftBoardDown, ALIEN_SPEED, board, gAliensTopRowIdx, gAliensBottomRowIdx)
     } else {
         for (var i = fromI; i <= toI; i++) {
             for (var j = board[0].length - 1; j >= 0; j--) {
                 if (j === 0) board[i][j].gameObject = null
                 else {
                     var lastCellObj = board[i][j - 1].gameObject
-                    if (lastCellObj === LASER) handleAlienHit({ i, j })
+                    if (lastCellObj === LASER) {
+                        handleAlienHit({ i, j })
+                    }
                     board[i][j].gameObject = (lastCellObj === ALIEN) ? ALIEN : null
                 }
             }
@@ -54,7 +56,6 @@ function shiftBoardLeft(board, fromI, toI) {
     if (isAliensReachedLeftWall(board)) {
         clearInterval(gIntervalAliens)
         shiftBoardDown(board, gAliensTopRowIdx, gAliensBottomRowIdx)
-        // gIntervalAliens = setInterval(shiftBoardDown, ALIEN_SPEED, board, gAliensTopRowIdx, gAliensBottomRowIdx)
     } else {
         for (var i = fromI; i <= toI; i++) {
             for (var j = 0; j < board[0].length; j++) {
@@ -102,6 +103,16 @@ function moveAliens() {
     gIntervalAliens = setInterval(shiftBoardRight, ALIEN_SPEED, gBoard, gAliensTopRowIdx, gAliensBottomRowIdx)
 }
 
+function getRandomBottomAlien() {
+    var alienCells = []
+    for (var j = 0; j < gBoard[0].length; j++) {
+        const cell = gBoard[gAliensBottomRowIdx][j]
+        if (cell.gameObject === ALIEN) alienCells.push({ i: gAliensBottomRowIdx + 1, j })
+    }
+    var randIdx = getRandomInt(0, alienCells.length)
+    return alienCells[randIdx]
+}
+
 function isAliensReachedRightWall(board) {
     for (var i = 0; i < board.length; i++) {
         if (board[i][board.length - 1].gameObject === ALIEN) return true
@@ -138,5 +149,35 @@ function isRowHasAlien(row) {
     }
     if (rowObjects.includes(ALIEN)) return true
     else return false
+}
+
+function throwRocks() {
+    gAlienPos = getRandomBottomAlien()
+    gBlinkRockInterval = setInterval(blinkRock, 450)
+}
+
+function blinkRock() {
+    if (gAlienPos.i > gHero.pos.i) {
+        stopBlinkRock()
+        return
+    }
+    if ({ i: gAlienPos.i + 1, gAlienPos } === gHero.pos) {
+        handleHeroHit()
+        stopBlinkRock()
+        return
+    } else if (gAlienPos.gameObject === CANDY) {
+        gIsAlienFreeze = true
+        setTimeout(() => gIsAlienFreeze = false, 5000)
+    }
+    updateCell(gAlienPos, ROCK)  //add laser
+    setTimeout(function () {     // remove laser
+        updateCell(gAlienPos)
+        gAlienPos.i++
+    }, 100)
+}
+
+function stopBlinkRock() {
+    clearInterval(gBlinkRockInterval)
+    gBlinkRockInterval = null
 }
 
